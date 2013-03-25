@@ -136,8 +136,9 @@ window.Raphael && window.Raphael.svg && function (R) {
         return 1;
     },
     updatePosition = function (o) {
-        var bbox = o.getBBox(1);
-        $(o.pattern, {patternTransform: o.matrix.invert() + " translate(" + bbox.x + "," + bbox.y + ")"});
+        // Turn this into a no-op
+        // var bbox = o.getBBox(1);
+        // $(o.pattern, {patternTransform: o.matrix.invert() + " translate(" + bbox.x + "," + bbox.y + ")"});
     },
     addArrow = function (o, value, isEnd) {
         if (o.type == "path") {
@@ -466,6 +467,10 @@ window.Raphael && window.Raphael.svg && function (R) {
                     case "fill":
                         var isURL = Str(value).match(R._ISURL);
                         if (isURL) {
+                            var patternTransform = ''
+                            if (isURL.length > 2 && isURL[2] != '') {
+                                patternTransform = isURL[2]
+                            }
                             el = $("pattern");
                             var ig = $("image");
                             el.id = R.createUUID();
@@ -477,15 +482,19 @@ window.Raphael && window.Raphael.svg && function (R) {
                                 R._preload(isURL[1], function () {
                                     var w = this.offsetWidth,
                                         h = this.offsetHeight;
-                                    $(el, {width: w, height: h});
+                                    if patternTransform != '' {
+                                        $(el, {width: w, height: h, patternTransform: patternTransform});
+                                    } else {
+                                        $(el, {width: w, height: h});
+                                    }
                                     $(ig, {width: w, height: h});
                                     o.paper.safari();
                                 });
                             })(el);
                             o.paper.defs.appendChild(el);
                             $(node, {fill: "url(#" + el.id + ")"});
-                            o.pattern = el;
-                            o.pattern && updatePosition(o);
+                            //o.pattern = el;
+                            //o.pattern && updatePosition(o);
                             break;
                         }
                         var clr = R.getRGB(value);
