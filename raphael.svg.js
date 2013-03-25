@@ -474,7 +474,7 @@ window.Raphael && window.Raphael.svg && function (R) {
                             var existingImages = o.paper.defs.getElementsByTagName("image");
                             for(var i=0; i< existingImages.length; i++){
                                 if(existingImages[i].href.baseVal === isURL[1]){
-                                    if(existingImages[i].getAttribute('patternTransform') === patternTransform) {
+                                    if(existingImages[i].parentNode.getAttribute('patternTransform') === patternTransform) {
                                         el = existingImages[i].parentNode;
                                     } 
                                }
