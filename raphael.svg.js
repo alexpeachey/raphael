@@ -468,8 +468,12 @@ window.Raphael && window.Raphael.svg && function (R) {
                         var isURL = Str(value).match(R._ISURL);
                         if (isURL) {
                             var patternTransform = null;
+                            var heightAdjustment = 1;
                             if (isURL.length > 2 && isURL[2] != '') {
-                                patternTransform = isURL[2];
+                                var adjustments = isURL[2].split(',');
+                                al = adjustments.length;
+                                heightAdjustment = al > 0 ? parseFloat(adjustments[1]) : 1;
+                                patternTransform = al > 1 ? adjustments[0] : null;
                             }
                             var existingImages = o.paper.defs.getElementsByTagName("image");
                             for(var i=0; i< existingImages.length; i++){
@@ -489,11 +493,12 @@ window.Raphael && window.Raphael.svg && function (R) {
                                 (function (el) {
                                     R._preload(isURL[1], function () {
                                         var w = this.offsetWidth,
-                                            h = this.offsetHeight;
+                                            h = this.offsetHeight,
+                                            ah = h * heightAdjustment;
                                         if (patternTransform) {
-                                            $(el, {width: w, height: h, patternTransform: patternTransform});
+                                            $(el, {width: w, height: ah, patternTransform: patternTransform});
                                         } else {
-                                            $(el, {width: w, height: h});
+                                            $(el, {width: w, height: ah});
                                         }
                                         $(ig, {width: w, height: h});
                                         o.paper.safari();
