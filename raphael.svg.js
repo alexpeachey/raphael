@@ -467,14 +467,14 @@ window.Raphael && window.Raphael.svg && function (R) {
                     case "fill":
                         var isURL = Str(value).match(R._ISURL);
                         if (isURL) {
-                            var patternTransform = null
+                            var patternTransform = null;
                             if (isURL.length > 2 && isURL[2] != '') {
-                                patternTransform = isURL[2]
+                                patternTransform = isURL[2];
                             }
                             var existingImages = o.paper.defs.getElementsByTagName("image");
                             for(var i=0; i< existingImages.length; i++){
                                 if(existingImages[i].href.baseVal === isURL[1]){
-                                    if existingImages[i].getAttribute('patternTransform') === patternTransform {
+                                    if(existingImages[i].getAttribute('patternTransform') === patternTransform) {
                                         el = existingImages[i].parentNode;
                                     } 
                                }
@@ -490,7 +490,7 @@ window.Raphael && window.Raphael.svg && function (R) {
                                     R._preload(isURL[1], function () {
                                         var w = this.offsetWidth,
                                             h = this.offsetHeight;
-                                        if patternTransform {
+                                        if (patternTransform) {
                                             $(el, {width: w, height: h, patternTransform: patternTransform});
                                         } else {
                                             $(el, {width: w, height: h});
