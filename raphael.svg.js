@@ -467,31 +467,41 @@ window.Raphael && window.Raphael.svg && function (R) {
                     case "fill":
                         var isURL = Str(value).match(R._ISURL);
                         if (isURL) {
-                            var patternTransform = ''
+                            var patternTransform = null
                             if (isURL.length > 2 && isURL[2] != '') {
                                 patternTransform = isURL[2]
                             }
-                            el = $("pattern");
-                            var ig = $("image");
-                            el.id = R.createUUID();
-                            $(el, {x: 0, y: 0, patternUnits: "userSpaceOnUse", height: 1, width: 1});
-                            $(ig, {x: 0, y: 0, "xlink:href": isURL[1]});
-                            el.appendChild(ig);
+                            var existingImages = o.paper.defs.getElementsByTagName("image");
+                            for(var i=0; i< existingImages.length; i++){
+                                if(existingImages[i].href.baseVal === isURL[1]){
+                                    if existingImages[i].getAttribute('patternTransform') === patternTransform {
+                                        el = existingImages[i].parentNode;
+                                    } 
+                               }
+                            }
+                            if(!el){
+                                el = $("pattern");
+                                var ig = $("image");
+                                el.id = R.createUUID();
+                                $(el, {x: 0, y: 0, patternUnits: "userSpaceOnUse", height: 1, width: 1});
+                                $(ig, {x: 0, y: 0, "xlink:href": isURL[1]});
+                                el.appendChild(ig);
+                                (function (el) {
+                                    R._preload(isURL[1], function () {
+                                        var w = this.offsetWidth,
+                                            h = this.offsetHeight;
+                                        if patternTransform {
+                                            $(el, {width: w, height: h, patternTransform: patternTransform});
+                                        } else {
+                                            $(el, {width: w, height: h});
+                                        }
+                                        $(ig, {width: w, height: h});
+                                        o.paper.safari();
+                                    });
+                                })(el);
 
-                            (function (el) {
-                                R._preload(isURL[1], function () {
-                                    var w = this.offsetWidth,
-                                        h = this.offsetHeight;
-                                    if patternTransform != '' {
-                                        $(el, {width: w, height: h, patternTransform: patternTransform});
-                                    } else {
-                                        $(el, {width: w, height: h});
-                                    }
-                                    $(ig, {width: w, height: h});
-                                    o.paper.safari();
-                                });
-                            })(el);
-                            o.paper.defs.appendChild(el);
+                                o.paper.defs.appendChild(el);
+                            }
                             $(node, {fill: "url(#" + el.id + ")"});
                             //o.pattern = el;
                             //o.pattern && updatePosition(o);
